@@ -1,0 +1,68 @@
+########################################
+### Model code for the Design Stage  ###
+########################################
+# numareasNOmis = 316 (in-sample areas)
+# numind = 20 (number of subjects for area)
+# K1 = 3 (number of continuous individual-level variables)
+# K2 = 5 (total number of individual-level variables)
+# The terms for the mv.car prior can be easily obtained from the spapefile for MAR study design within the folder "Shapefiles"
+# The variables C, X, and m are related to the 316 in-sample areas 
+
+model{
+
+# Up-scaling model #
+
+for(i in 1:numareasNOmis){
+for(k in 1:K1){
+for(s in 1:numind){
+m[i,s,k] ~ dnorm(M[i,k], tau[k])
+}
+M[i,k] <- nu[k]+xi[k,i]
+}
+
+for(k in (K1+1):K2){
+for(s in 1:numind){
+m[i,s,k] ~ dbern(M[i,k])
+}
+M[i,k] <- phi(nu[k]+xi[k,i])
+}
+}
+
+
+xi[1:numvars,1:numareasNOmis] ~ mv.car(adj[], weights[], num[], prec.xi[ , ])
+
+prec.xi[1:5, 1:5] ~ dwish(B[,], 5) 
+Sigma.xi[1:5,1:5] <- inverse(prec.xi[,])
+
+for (k in 1:5) {
+nu[k] ~ dflat()
+}
+
+for(k in 1:K1){
+tau[k] ~ dgamma(1,0.1)   
+sigma2[k] <- 1/tau[k]
+}
+
+
+
+# Generalized EPS Estimation #
+
+for(i in 1:numareasNOmis){
+
+X[i] ~ dnorm(muX[i], tauX)
+
+muX[i] <- delta0+deltac*C[i]+eps[i]
+
+eps[i] <- deltam[1]*M[i,1]+deltam[2]*M[i,2]+deltam[3]*M[i,3]+deltam[4]*M[i,4]+deltam[5]*M[i,5]
+}
+
+
+delta0 ~ dnorm(0, 0.01)
+deltac ~ dnorm(0, 0.01)
+for(j in 1:5) {
+deltam[j] ~ dnorm(0, 0.01)}
+
+tauX ~ dgamma(1, 0.1)
+sigma2X <- 1/tauX
+}
+
