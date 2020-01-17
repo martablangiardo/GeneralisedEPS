@@ -3,7 +3,7 @@ Simulated data and models to implement the approach presented in the paper under
 - simulation design 3, with sparse spatial coverege under MNAR mechanism.
 
 In particular, the models implement the design stage (Sections 3.2 and 3.3) and the Analysis stage (Sections 3.4).
-We provide two examples of code to run the models in R (stored in the folder "DATA_MAR"). 
+We provide two examples of code to run the models in R. 
 The code is for the data generated under MAR mechanism, however its use on data generated under 
 MNAR mechanism is straightforward to implement.
 
